@@ -2,7 +2,52 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
+class WrongStudentName extends Exception { }
+class WrongAge extends Exception { }
+class WrongDateOfBirth extends Exception { }
+
+class Student {
+    private String name; 
+    private int age; 
+    private String dateOfBirth;
+
+    public Student(String name, int age, String dateOfBirth) { 
+        this.name = name; 
+        this.age = age; 
+        this.dateOfBirth = dateOfBirth; 
+    }
+
+    public String ToString() { 
+        return "Student: " + name + ", Wiek: " + age + ", Data urodzenia: " + dateOfBirth; 
+    }
+
+    public String getName() { 
+        return name; 
+    }
+}
+
+class Service {
+    private static List<Student> students = new ArrayList<>();
+
+    public void addStudent(Student student) throws IOException { 
+        students.add(student);
+        System.out.println("Student dodany pomyślnie.");
+    }
+
+    public List<Student> getStudents() throws IOException { 
+        return students; 
+    }
+
+    public Student findStudentByName(String name) throws IOException { 
+        for (Student s : students) { 
+            if (s.getName().equalsIgnoreCase(name)) return s; 
+        } 
+        return null;
+    }
+}
 
 
 class Main {
@@ -17,7 +62,9 @@ class Main {
                     case 1: exercise1(); break;
                     case 2: exercise2(); break;
                     case 3: exercise3(); break;
-                    default: return;
+                    default: 
+                        if (ex != -1) return;
+                        break;
                 }
             } catch(IOException e) {
                  System.out.println("Wystąpił błąd wejścia/wyjścia (I/O error).");
@@ -38,9 +85,18 @@ class Main {
         System.out.println("3 - aby wyszukać studenta po imieniu");
         System.out.println("0 - aby wyjść z programu");
 
-        int choice = scan.nextInt();
-        scan.nextLine();
-        return choice;
+        String input = scan.nextLine();
+
+        while (input.trim().isEmpty() && scan.hasNextLine()) {
+             input = scan.nextLine();
+        }
+
+        try {
+            return Integer.parseInt(input.trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Błędny wybór! Wprowadź cyfrę (0-3).");
+            return -1;
+        }
     }
 
     public static String ReadName() throws WrongStudentName {
