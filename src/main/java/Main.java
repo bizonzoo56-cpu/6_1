@@ -2,52 +2,10 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
-import java.util.List;
 
 class WrongStudentName extends Exception { }
 class WrongAge extends Exception { }
 class WrongDateOfBirth extends Exception { }
-
-class Student {
-    private String name; 
-    private int age; 
-    private String dateOfBirth;
-
-    public Student(String name, int age, String dateOfBirth) { 
-        this.name = name; 
-        this.age = age; 
-        this.dateOfBirth = dateOfBirth; 
-    }
-
-    public String ToString() { 
-        return "Student: " + name + ", Wiek: " + age + ", Data urodzenia: " + dateOfBirth; 
-    }
-
-    public String getName() { 
-        return name; 
-    }
-}
-
-class Service {
-    private static List<Student> students = new ArrayList<>();
-
-    public void addStudent(Student student) throws IOException { 
-        students.add(student);
-        System.out.println("Student dodany pomyślnie.");
-    }
-
-    public List<Student> getStudents() throws IOException { 
-        return students; 
-    }
-
-    public Student findStudentByName(String name) throws IOException { 
-        for (Student s : students) { 
-            if (s.getName().equalsIgnoreCase(name)) return s; 
-        } 
-        return null;
-    }
-}
 
 
 class Main {
