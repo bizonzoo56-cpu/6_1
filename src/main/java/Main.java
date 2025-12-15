@@ -1,7 +1,9 @@
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-class WrongStudentName extends Exception { }
+
 
 class Main {
     public static Scanner scan = new Scanner(System.in);
@@ -10,6 +12,7 @@ class Main {
         while(true) {
             try {
                 int ex = menu();
+
                 switch(ex) {
                     case 1: exercise1(); break;
                     case 2: exercise2(); break;
@@ -17,24 +20,30 @@ class Main {
                     default: return;
                 }
             } catch(IOException e) {
-
+                 System.out.println("Wystąpił błąd wejścia/wyjścia (I/O error).");
             } catch(WrongStudentName e) {
-                System.out.println("Błędne imię studenta!");
+                System.out.println("Błędne imię studenta! Imię nie może zawierać spacji.");
+            } catch(WrongAge e) {
+                System.out.println("Błędny wiek! Wiek musi być w zakresie 1-99.");
+            } catch(WrongDateOfBirth e) {
+                System.out.println("Błędna data urodzenia! Format musi być DD-MM-YYYY (np. 28-02-2023).");
             }
         }
     }
 
     public static int menu() {
-        System.out.println("Wciśnij:");
+        System.out.println("\nWciśnij:");
         System.out.println("1 - aby dodać studenta");
         System.out.println("2 - aby wypisać wszystkich studentów");
         System.out.println("3 - aby wyszukać studenta po imieniu");
         System.out.println("0 - aby wyjść z programu");
-        return scan.nextInt();
+
+        int choice = scan.nextInt();
+        scan.nextLine();
+        return choice;
     }
 
     public static String ReadName() throws WrongStudentName {
-        scan.nextLine();
         System.out.println("Podaj imię: ");
         String name = scan.nextLine();
         if(name.contains(" "))
@@ -43,13 +52,37 @@ class Main {
         return name;
     }
 
-    public static void exercise1() throws IOException, WrongStudentName {
+    private static boolean isValidDateOfBirth(String date) {
+        Pattern pattern = Pattern.compile("^\\d{2}-\\d{2}-\\d{4}$");
+        Matcher matcher = pattern.matcher(date);
+        return matcher.matches();
+    }
+
+    public static void exercise1() throws IOException, WrongStudentName, WrongAge, WrongDateOfBirth {
         var name = ReadName();
-        System.out.println("Podaj wiek: ");
-        var age = scan.nextInt();
-        scan.nextLine();
-        System.out.println("Podaj datę urodzenia DD-MM-YYYY");
+
+        System.out.println("Podaj wiek (1-99): ");
+        int age;
+
+        if (scan.hasNextInt()) {
+            age = scan.nextInt();
+            scan.nextLine();
+        } else {
+            scan.nextLine();
+            throw new WrongAge();
+        }
+
+        if (age < 1 || age > 99) {
+            throw new WrongAge();
+        }
+
+        System.out.println("Podaj datę urodzenia DD-MM-YYYY: ");
         var date = scan.nextLine();
+
+        if (!isValidDateOfBirth(date)) {
+            throw new WrongDateOfBirth();
+        }
+
         (new Service()).addStudent(new Student(name, age, date));
     }
 
@@ -61,7 +94,6 @@ class Main {
     }
 
     public static void exercise3() throws IOException {
-        scan.nextLine();
         System.out.println("Podaj imię: ");
         var name = scan.nextLine();
         var wanted = (new Service()).findStudentByName(name);
